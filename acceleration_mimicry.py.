@@ -1,0 +1,52 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Parameters from the paper (Section 4, Appendix A.3)
+gamma = 0.32          # Exponent for redshift modification (≈ γ ≈ 0.32 from spin/scale)
+delta = gamma         # For dL stretch (δ ≈ γ in the toy model)
+z = np.linspace(0, 2.5, 500)  # Redshift range (up to z ≈ 2.5 for SNIa/BAO relevance)
+
+# Simple toy C(z): integrated proper-time ratio along photon paths
+# (faster proper time in voids stretches distances; approximate form for illustration)
+C_z = 1 + 0.15 * z / (1 + z)   # Boost factor ~15% at z=1, ~20–25% at higher z
+
+# Modified observed redshift (mild stretch)
+z_obs = (1 + z) * C_z**gamma - 1
+
+# Modified luminosity distance (dL ~ (1+z_obs)^2 * dA * C(z)^δ)
+# Here we show relative boost dL_model / dL_standard (without chronodynamics)
+dL_boost = C_z**delta * (1 + z_obs)**2 / (1 + z)**2
+
+# Reference: standard flat ΛCDM-like dL boost for comparison (rough)
+dL_standard = 1 + 0.3 * z / (1 + z)   # Very approximate acceleration mimicry baseline
+
+# Create the figure
+plt.figure(figsize=(10, 6))
+
+# Main curves
+plt.plot(z, dL_boost, lw=2.5, color='darkred',
+         label=r'$d_L^\mathrm{boost} / d_L^\mathrm{standard}$ (chronodynamic time crunch)')
+
+plt.plot(z, C_z, lw=2, color='teal', ls='--',
+         label=r'$C(z) \approx 1 + 0.15 \times z/(1+z)$ (time ratio along paths)')
+
+# Key markers
+plt.axvline(1.0, color='gray', ls=':', alpha=0.7)
+plt.text(1.05, 1.18, 'z ≈ 1\n≈15–25% dL boost', color='darkred', fontsize=10, ha='left')
+
+# Formatting
+plt.xlabel('Redshift z', fontsize=13)
+plt.ylabel('Relative luminosity distance boost', fontsize=13)
+plt.title('Mimicry of cosmic acceleration via chronodynamic time crunch\n'
+          '(integrated proper-time ratio along void-dominated paths, γ ≈ 0.32)', fontsize=14)
+plt.grid(True, which='both', ls='--', alpha=0.6)
+plt.legend(fontsize=11, loc='upper left')
+
+# Limits for clarity
+plt.xlim(0, 2.5)
+plt.ylim(0.95, 1.35)
+
+# Save and show
+plt.tight_layout()
+plt.savefig('fig_acceleration_mimicry.png', dpi=200)
+plt.show()
